@@ -1,4 +1,8 @@
 import numpy as np
+import matplotlib.pyplot as plt 
+
+#SEGUNDO PUNTO TAREA 3 ---------------------------------------------------------
+
 
 #extraer los datos
 
@@ -39,8 +43,8 @@ print(val)
 
 #calcular los autovectores de sus autovalores
 
-#for i in range(np.shape(val)[0]):
-    #print("el vector", vec[:,i], "corresponde al valor" , val[i])
+for i in range(np.shape(val)[0]):
+    print("el vector", vec[:,i], "corresponde al valor" , val[i])
     
 
 #hallaremos los parametros más importantes en medida de sus porcentajes
@@ -49,16 +53,53 @@ def porcentajemayores(array):
     total = np.sum(array)
     narray = np.array([])
     nvalores = np.array([])
+    auto = np.array([])
     for i in range(np.shape(array)[0]):
         totali = (array[i] * 100)/total
         if(totali>=15): #tocó sobre el 15% para escoger dos 
-             narray = np.append(narray,totali)
-             nvalores = np.append(nvalores,array[i]) 
+             narray = np.append(narray,totali)             
+             auto = np.append(auto,i+1)
 
 
-    return narray , nvalores 
-suma = np.sum(val)
-print (porcentajemayores(val))      
+    return "los porcentajes de los mayores componentes son:", narray , "los componentes más importantes son los numeros:" , auto 
+
+print (porcentajemayores(val)) 
+     
+ #las componentes más importantes son las dos primeras-
+
+
+Pr= np.transpose(np.array([vec[0],vec[1]]))
+T = np.dot(data,Pr) #Proyeccion 
+
+#guardar las imagenes de las proyecciones 
+
+plt.scatter(T[:,0],T[:,1])
+plt.savefig("MelendezLaura_PCA.pdf")
+
+print( "Se muestra como PCA puede ayudar a la identificación de patrones que facilitarán posibles agrupamientos posteriores de tumores que podrían ser tediosos de otras formas" )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
