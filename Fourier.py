@@ -29,16 +29,20 @@ def reales(datox):
          f1 = np.sqrt(f)
          f2 = np.append(f2,f1)
     return f2 
+
+
 n = np.linspace(1,513,512)    
 #print(reales(fourierdiscreta(datos1,512,k)))
 
 #la transformada de Fourier de los datos de la seÑal usando mi implementacion (grafica sin mostrar)
 
 plt.figure()
-plt.plot(n,reales(fourierdiscreta(datos1,n)))
+plt.plot(datos1[:,0],reales(fourierdiscreta(datos1,n)))
 #plt.show()
 #print(fourierdiscreta(datos1,512,k))
 plt.savefig("MelendezLaura_TF.pdf")
+
+#con fft 
 
 
 
