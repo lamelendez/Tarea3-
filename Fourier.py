@@ -12,11 +12,12 @@ plt.savefig("MelendezLaura_signal.pdf")
 
 #mi funcion de fourier discreta modificada para un array y no una funcion
 
-def fourierdiscreta(f,n,k):
+def fourierdiscreta(f,n):
     funcion = 0
+    N = np.shape(n)[0]
     f1 = f[:,1]
     f2 = f[:,0]            
-    funcion = f1*(np.exp((-2j*np.pi*k*f2)/n))
+    funcion = f1*(np.exp((-2j*np.pi*n*f2)/N))
     return funcion
 
 #vamos a volver reales los valores del array que salen por fourier discreta par apoder graficarlos
@@ -28,13 +29,13 @@ def reales(datox):
          f1 = np.sqrt(f)
          f2 = np.append(f2,f1)
     return f2 
-k = np.linspace(0,2*np.pi,512)    
+n = np.linspace(1,513,512)    
 #print(reales(fourierdiscreta(datos1,512,k)))
 
 #la transformada de Fourier de los datos de la seÑal usando mi implementacion (grafica sin mostrar)
 
 plt.figure()
-plt.plot(k,reales(fourierdiscreta(datos1,513,k)))
+plt.plot(n,reales(fourierdiscreta(datos1,n)))
 #plt.show()
 #print(fourierdiscreta(datos1,512,k))
 plt.savefig("MelendezLaura_TF.pdf")
