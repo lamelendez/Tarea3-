@@ -11,6 +11,7 @@ fshift = np.fft.fftshift(f)
 freq = np.fft.fftfreq(len(f[0]))
 magnitude_spectrum = (30*np.abs(fshift))
 plt.imshow(magnitude_spectrum, norm=LogNorm(20))
+plt.title("Imagen con Fourier 2D")
 plt.savefig("MelendezLaura_FT2D.pdf")
 plt.show()
 
@@ -27,6 +28,7 @@ def filtro(fu,fe):
 
 plt.figure()
 plt.plot(freq,filtro(fshift,freq))
+plt.title("Grafica filtrada de los dos picos")
 plt.savefig("LauraMelendez_FT2D_filtrada.pdf")
 #plt.show()
 
@@ -35,9 +37,11 @@ plt.savefig("LauraMelendez_FT2D_filtrada.pdf")
 
 fa = np.fft.ifft2(foto)
 fshifta = np.fft.fftshift(fa)
-magnitude_spectrum = (30*np.abs(fshifta))
-plt.imshow(magnitude_spectrum, norm=LogNorm(20)) 
+magnitude_spectruma = (20*np.abs(filtro(fshifta,freq)))
+plt.figure()
+plt.imshow(magnitude_spectruma, norm=LogNorm(20)) 
+#plt.savefig("MelendezLaura_Imagen_filtrada.pdf")
 plt.show()
-plt.savefig("MelendezLaura_Imagen_filtrada.pdf")
 
+#tengo un error que no entiendo, pero ahí esta entrando en la inversa la imagen filtrada
 
