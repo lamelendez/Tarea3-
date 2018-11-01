@@ -32,7 +32,8 @@ def matrizcov(datax):
             #d = np.sqrt(varianza)
             covarianza[i,j] = np.sum((datax[:,i]-meani)*(datax[:,j]-meanj))/(m_dim-1)
     return covarianza 
-print(matrizcov(data1)[0])
+
+print(matrizcov(data1))
 
 A = matrizcov(data1)
 
@@ -42,8 +43,8 @@ val,vec = np.linalg.eig(A)
 
 #calcular los autovectores de sus autovalores
 
-#for i in range(np.shape(val)[0]):
- #   print("el vector", vec[:,i], "corresponde al valor" , val[i])
+for i in range(np.shape(val)[0]):
+    print("el vector", vec[:,i], "corresponde al valor" , val[i])
     
 
 #hallaremos los parametros más importantes con los porcentajes            
@@ -64,7 +65,7 @@ def porcentajemayores(array):
 
     return "los porcentajes de los mayores componentes son:", narray , "los componentes más importantes son los numeros:" , auto 
 
-#print (porcentajemayores(val)) 
+print (porcentajemayores(val)) 
      
 #las componentes más importantes son las dos primeras-
 
@@ -74,11 +75,20 @@ T = np.dot(Pr,np.transpose(data1)) #Proyeccion
 
 #guardar las imagenes de las proyecciones 
 
-plt.scatter(T[0,:],T[1,:])
+#cambiamos los colorsitos
+T1=T[0,:]
+T2=T[1,:]
+plt.figure()
+plt.scatter(T1[mb1==1],T2[mb1==1],color="red",label = "Maligno")
+plt.scatter(T1[mb1==0],T2[mb1==0],color="blue", label = "benigno")
+plt.legend()
 plt.savefig("MelendezLaura_PCA.pdf")
-plt.show()
 
-print( "Se muestra como PCA puede ayudar a la identificación de patrones que facilitarán posibles agrupamientos posteriores de tumores que podrían ser tediosos de otras formas" )
+
+
+
+
+print( "Se muestra como PCA puede ayudar a la identificación de patrones que facilitarán posibles agrupamientos posteriores de tumores que podrían ser tediosos de otras formas, pues a pesar que son datos cercanos, no se mezclan entre ellos" )
 
 
 
