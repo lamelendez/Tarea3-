@@ -1,7 +1,7 @@
 import numpy as np 
-import matplotlib.pyplot as plt 
-import plotly.plotly as py
-import plotly.tools as tls
+import matplotlib.pyplot as plt
+import plotly
+
 from scipy.interpolate import interp1d
 from scipy.fftpack import fft, fftfreq
 
@@ -12,9 +12,10 @@ datos2 = np.genfromtxt("incompletos.dat", delimiter=",")
 #grafica sin modificar de signal.dat
 plt.figure()
 plt.plot(datos1[:,0],datos1[:,1])
+plt.title("datos originales")
 plt.savefig("MelendezLaura_signal.pdf")
 
-#mi funcion de fourier discreta modificada para un array y no una funcion
+#mi funcion propia de fourier discreta modificada para un array y no una funcion
 
 def fourierdiscreta(f):
     funcion = 0
@@ -45,50 +46,60 @@ def reales(datox):
 #n = np.linspace(1,513,512)    
 #print(reales(fourierdiscreta(datos1,512,k)))
 
-#la transformada de Fourier de los datos de la seÑal usando mi implementacion (grafica sin mostrar)
 
-plt.figure()
-plt.plot(datos1[:,0],reales(fourierdiscreta(datos1)))
-#plt.show()
-#print(fourierdiscreta(datos1,512,k))
-plt.savefig("MelendezLaura_TF.pdf")
+
 
 #con fft sin bonito 
 
 n = 512 #numero de datos que tenemos 
-dt = 2*np.pi/(0.0272321428571-0.0271763392857) #numero de datos por unidad de frecuenca
+dt = (datos1[:,1][2] - datos1[:,1][1]) #numero de datos por unidad de frecuenca
 fft_x = fft(datos1[:,1]) / n # FFT Normalized
 freq = fftfreq(n, dt) # Recuperamos las frecuencias
 plt.figure()
 plt.plot(freq,abs(fft_x))
-plt.show()
+plt.savefig("LauraMelendez_TF.pdf") 
+
+#plt.figure()
+#plt.plot(freq,reales(fourierdiscreta(datos1)))              #Esta es mi señal discreta pero no funciona entonces no la grafiqué
+
+#plt.savefig("MelendezLaura_TF.pdf")
+#plt.show()
+#print(fourierdiscreta(datos1,512,k))
+
+
 
 #las hallé con la grafica que me dio, los picos.
-print("las frecuencias principales de mi señal son: -1.855e-07,-6.7649e-08,8.96178e-08,2.07567e-07 ")
+print("las frecuencias principales de mi señal son: 0.014452 y 0.038561 ")
 
 
 #Filtro pasabajas
 
-freq_cut = 1000
-fft_x[abs(freq) > freq_cut] = 0
+
+clean_f = np.fft.ifft(datos1[:,1])
+
+def pasabajas(fe,fu,fcc):       
+    for i in range(np.shape(fe)[0]):
+        if fu[i]>fcc:   
+            fu[i]=0.0
+    return fu   
+
 
 #con la inversa de fft 
 
-plt.figure()
-t = np.linspace(n-512,n,n) 
-clean_f = np.fft.ifft(fft_x) 
-
-plt.plot(t,np.real(clean_f), linewidth=5, color='green')
-plt.show()
+plt.figure() 
+pb = pasabajas(freq,clean_f,100)
+plt.plot(pb)
+plt.savefig("MelendezLaura_filtrada.pdf")
 
 
-#LAURA ACUERDESE QUE LE FALTA EXPLICAR POR QUÉ LOS DATOS ESOS DE MERGA NO DAN 
+print("No se puede hacer la transformada con esos datos porque las potencias con las que trabaja fourier deben ser de dos. Estos datos tienen una longitud de 117. LA interpolacion es necesaria") 
 
 
 #Interpolacion de mis datos incorrectos 
 
 def interpolar (x,y):
-    xnuevo = np.linspace(0.000390625,0.028515625,512)
+    xnuevo = np.linspace(0.000390625,0.028515625,512) #primero y final de la columan 0 de los archivos incompletos
+
     #flin = interp1d(x, y)
     fcua = interp1d(x, y,kind ='quadratic')
     fcub = interp1d(x, y,kind ='cubic')
@@ -97,40 +108,52 @@ def interpolar (x,y):
 
 x,y1,y2 = interpolar(datos2[:,0],datos2[:,1])
 
-na = 512 #numero de datos que tenemos 
-dta = 2*np.pi/(0.0205915178571-0.0205357142857) #numero de datos por unidad de frecuenca
-fft_xa = fft(y1) / na # FFT Normalized
-freqa = fftfreq(na, dta) # Recuperamos las frecuencias
+cuadratica = fft(y1(x))/len(x)
+cubico = fft(y2(x))/len(x)          #fourier de las interpolaciones
+
+  #ploteo de eso
 plt.figure()
+plt.subplot(221)
+plt.plot(freq,abs(fft_x))
+plt.title("señal")
+plt.subplot(222)
+plt.plot(freq,abs(cuadratica))
+plt.title("señal interpolada cuadratica")
+plt.subplot(223)
+plt.plot(freq,abs(cubico))
+plt.title("señal interpolada cubica")
+plt.savefig("MelendezLaura_TF_interpola.pdf")
+   
 
 
+ #ahora quitandole el ruido 
 
+plt.subplot(321)
+pb1= pasabajas(freq,abs(cuadratica),500)
+plt.plot(pb1)
+plt.title("cuadratica pasabajas 500hz")
+plt.subplot(322)
+pb2= pasabajas(freq,abs(cubico),500)
+plt.plot(pb2)
+plt.title("cubico pasabajas 500hz")
+plt.subplot(323)
+pb3= pasabajas(freq,fft_x,500)
+plt.plot(pb3)
+plt.title("señal pasabajas 500hz")
+plt.subplot(324)
+pb4= pasabajas(freq,fft_x,1000)
+plt.plot(pb4)
+plt.title("señal pasabajas 1000hz")
+plt.subplot(325)
+pb5= pasabajas(freq,abs(cubico),1000)
+plt.plot(pb5)
+plt.title("cubico pasabajas 1000hz")
+plt.subplot(326)
+pb6= pasabajas(freq,abs(cuadratica),1000)
+plt.plot(pb6)
+plt.title("cuadratica pasabajas 1000hz")
+plt.savefig("MelendezLaura_2Filtros.pdf")
 
-
-fft_xb = fft(y2) / n # FFT Normalized
-freqb = fftfreq(na, dta) # Recuperamos las frecuencias
-  
-
-fig = plt.figure()
-
-ax1 = fig.add_subplot(221)
-ax1.plot(freqa,abs(fft_xa))
-
-ax2 = fig.add_subplot(222)
-ax2.plot(freqb,abs(fft_xb))
-
-ax3 = fig.add_subplot(223)
-ax3.plot(datos1[:,0],reales(fourierdiscreta(datos1)))
-
-plt.tight_layout()
-fig = plt.gcf()
-
-plotly_fig = tls.mpl_to_plotly( fig )
-plotly_fig['layout']['title'] = 'Transformadas de fourier '
-plotly_fig['layout']['margin'].update({'t':40})
-
-py.iplot(plotly_fig)
-plt.show()   
 
 
 
